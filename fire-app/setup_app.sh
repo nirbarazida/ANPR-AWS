@@ -72,7 +72,7 @@ ssh -tt -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubu
     cd ANPR-AWS
     echo "Install requirements"
     sudo pip install -r requirements.txt
-    export FLASK_APP=app.py
+    export FLASK_APP=app/app.py
     # run app
     echo "Run app"
     python3 -m flask run --host=0.0.0.0
