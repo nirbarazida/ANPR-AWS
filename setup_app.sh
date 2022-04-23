@@ -5,8 +5,8 @@ KEY_NAME="ANPR"
 KEY_PEM="$KEY_NAME.pem"
 
 echo "create key pair $KEY_PEM to connect to instances and save locally"
-aws ec2 create-key-pair --key-name $KEY_NAME \
-    | jq -r ".KeyMaterial" > $KEY_PEM
+aws ec2 create-key-pair --key-name $KEY_NAME 
+#    | jq -r ".KeyMaterial" > $KEY_PEM
 
 # secure the key pair
 chmod 400 $KEY_PEM
@@ -33,7 +33,7 @@ aws ec2 authorize-security-group-ingress        \
     --group-name $SEC_GRP --port 5000 --protocol tcp \
     --cidr $MY_IP/32
 
-UBUNTU_20_04_AMI="ami-042e8287309f5df03"
+UBUNTU_20_04_AMI="ami-0d527b8c289b4af7f"
 
 echo "Creating Ubuntu 20.04 instance..."
 RUN_INSTANCES=$(aws ec2 run-instances   \
@@ -53,7 +53,14 @@ PUBLIC_IP=$(aws ec2 describe-instances  --instance-ids $INSTANCE_ID |
 
 echo "New instance $INSTANCE_ID @ $PUBLIC_IP"
 
-echo "setup production environment"
+echo "Create table"
+aws dynamodb create-table \
+    --table-name ParkingLot \
+    --attribute-definitions AttributeName=ticketId,AttributeType=S \
+    --key-schema AttributeName=ticketId,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+
+echo "Deploy and run app"
 ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
     sudo apt update
     sudo apt install python3-pip -y
@@ -62,10 +69,10 @@ ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@
     cd ANPR-AWS
     pip install requirements.txt
     # run app
-    export FLASK_APP=app.py
     nohup flask run --host 0.0.0.0  &>/dev/null &
     exit
 EOF
+
 
 echo "test that it all worked"
 curl  --retry-connrefused --retry 10 --retry-delay 1  http://$PUBLIC_IP:5000
