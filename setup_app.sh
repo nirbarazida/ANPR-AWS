@@ -1,17 +1,17 @@
 # debug
 # set -o xtrace
 
-KEY_NAME="ANPR"
+KEY_NAME="NAPR-AWS-`date +'%N'`"
 KEY_PEM="$KEY_NAME.pem"
 
 echo "create key pair $KEY_PEM to connect to instances and save locally"
-aws ec2 create-key-pair --key-name $KEY_NAME 
-#    | jq -r ".KeyMaterial" > $KEY_PEM
+aws ec2 create-key-pair --key-name $KEY_NAME --query "KeyMaterial" --output text > $KEY_PEM
+
 
 # secure the key pair
 chmod 400 $KEY_PEM
 
-SEC_GRP="ANPR-sg"
+SEC_GRP="NAPR-AWS-sg-`date +'%N'`"
 
 echo "setup firewall $SEC_GRP"
 aws ec2 create-security-group   \
@@ -61,16 +61,21 @@ aws dynamodb create-table \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
 echo "Deploy and run app"
-ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
-    sudo apt update
+ssh -tt -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+    echo "install pip"
     sudo apt install python3-pip -y
     sudo pip3 install --upgrade pip
+    echo "Clone repo"
     sudo git clone https://github.com/nirbarazida/ANPR-AWS.git
     cd ANPR-AWS
-    pip install requirements.txt
+    echo "Install requirements"
+    sudo pip install -r requirements.txt
+    export FLASK_APP=app.py
     # run app
-    nohup flask run --host 0.0.0.0  &>/dev/null &
-    exit
+    echo "Run app"
+    python3 -m flask run --host=0.0.0.0
 EOF
 
 
