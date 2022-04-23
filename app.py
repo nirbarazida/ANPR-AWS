@@ -78,7 +78,7 @@ def exit_car():
                             status=404)
 
 
-@app.route('/lpr', methods=['POST'])
+@app.route('/home', methods=['POST'])
 def upload():
     image = request.files['image']
     rekognition_client = boto3.client('rekognition')
