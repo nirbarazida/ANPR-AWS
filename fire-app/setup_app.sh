@@ -64,7 +64,7 @@ ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "Co
     sudo apt-get update -y
     sudo apt-get upgrade -y
     echo "install pip"
-    sudo apt install python3-pip -y
+    sudo -H pip3 install pip==8.1.1
     sudo pip3 install --upgrade pip
     echo "Clone repo"
     sudo git clone https://github.com/nirbarazida/ANPR-AWS.git
