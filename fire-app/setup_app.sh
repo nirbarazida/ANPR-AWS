@@ -59,10 +59,18 @@ aws dynamodb create-table \
     --key-schema AttributeName=ticketId,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
-echo "Deploy and run app"
+echo "Update apt"
 ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
     sudo apt-get update -y
+EOF
+
+echo "upgrade apt"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
     sudo apt-get upgrade -y
+EOF
+
+echo "Deploy code to machine"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
     echo "install pip"
     sudo apt install python3-pip -y
     sudo pip3 install --upgrade pip
@@ -71,12 +79,11 @@ ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "Co
     cd ANPR-AWS
     echo "Install requirements"
     sudo pip install -r requirements.txt
+EOF
+
+echo "Rub app"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
     export FLASK_APP=app/app.py
-    # run app
     echo "Run app"
     python3 -m flask run --host=0.0.0.0
 EOF
-
-
-echo "test that it all worked"
-curl  --retry-connrefused --retry 10 --retry-delay 1  http://$PUBLIC_IP:5000
