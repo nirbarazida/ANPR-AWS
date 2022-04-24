@@ -1,17 +1,16 @@
 # debug
 # set -o xtrace
 
-KEY_NAME="NAPR-AWS-`date +'%N'`"
+KEY_NAME="NAPR-AWS"
 KEY_PEM="$KEY_NAME.pem"
 
 echo "create key pair $KEY_PEM to connect to instances and save locally"
 aws ec2 create-key-pair --key-name $KEY_NAME --query "KeyMaterial" --output text > $KEY_PEM
 
-
 # secure the key pair
 chmod 400 $KEY_PEM
 
-SEC_GRP="NAPR-AWS-sg-`date +'%N'`"
+SEC_GRP="NAPR-AWS-sg"
 
 echo "setup firewall $SEC_GRP"
 aws ec2 create-security-group   \
@@ -61,7 +60,7 @@ aws dynamodb create-table \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
 echo "Deploy and run app"
-ssh -tt -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
     sudo apt-get update -y
     sudo apt-get upgrade -y
     echo "install pip"
