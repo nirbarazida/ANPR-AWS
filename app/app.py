@@ -13,7 +13,7 @@ import uuid
 # TICKET_NUM = 0
 app = Flask(__name__)
 
-with open('./const.yaml') as f:
+with open('app/const.yaml') as f:
     # use safe_load instead load
     const = yaml.safe_load(f)
 
