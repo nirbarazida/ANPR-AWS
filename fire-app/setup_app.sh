@@ -55,20 +55,10 @@ echo "New instance $INSTANCE_ID @ $PUBLIC_IP"
 
 echo "Create table"
 aws dynamodb create-table \
-    --table-name "ParkingLog" \
+    --table-name "ParkingLot" \
     --attribute-definitions AttributeName=ticketId,AttributeType=S \
     --key-schema AttributeName=ticketId,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
-
-
-echo "setup production environment"
-ssh -i $KEY_PEM -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
-    sudo apt update
-    sudo apt install python3-flask -y
-    # run app
-    nohup flask run --host 0.0.0.0  &>/dev/null &
-    exit
-EOF
 
 
 echo "Deploy app"
