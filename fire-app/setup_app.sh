@@ -32,7 +32,7 @@ aws ec2 authorize-security-group-ingress        \
     --group-name $SEC_GRP --port 5000 --protocol tcp \
     --cidr $MY_IP/32
 
-UBUNTU_20_04_AMI="ami-042e8287309f5df03"
+UBUNTU_20_04_AMI="ami-0d527b8c289b4af7f"
 
 echo "Creating Ubuntu 20.04 instance..."
 RUN_INSTANCES=$(aws ec2 run-instances   \
@@ -120,6 +120,23 @@ ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "Co
 #    sudo apt-get install python3-setuptools -y ;\
 #    sudo apt-get install python3-pip -y ;\
 #    sudo pip3 install --upgrade pip -y ;\
+#    echo "Clone repo" ;\
+#    git clone https://github.com/nirbarazida/ANPR-AWS.git ;\
+#    cd ANPR-AWS ;\
+#    echo "Install requirements" ;\
+#    pip3 install -r requirements.txt ;\
+#    export FLASK_APP=app/app.py ;\
+#    echo "Run app" ;\
+#    python3 -m flask run --host=0.0.0.0'
+
+
+
+#    sudo apt-get update -y ;\
+#    echo "install pip" ;\
+#    sudo apt-get install python3.8 -y ;\
+#    sudo apt-get install python3-setuptools -y ;\
+#    sudo apt-get install python3-pip -y ;\
+#    sudo pip3 install --upgrade pip ;\
 #    echo "Clone repo" ;\
 #    git clone https://github.com/nirbarazida/ANPR-AWS.git ;\
 #    cd ANPR-AWS ;\
