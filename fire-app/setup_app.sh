@@ -65,73 +65,14 @@ echo "Deploy app"
 ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP '\
     sudo apt-get update -y ;\
     echo "install pip" ;\
+    sudo apt-get install python3-setuptools -y ;\
     sudo apt install python3-pip -y ;\
     sudo pip3 install --upgrade pip ;\
     echo "Clone repo" ;\
     git clone https://github.com/nirbarazida/ANPR-AWS.git ;\
     cd ANPR-AWS ;\
     echo "Install requirements" ;\
-    python3-pip install -r requirements.txt ;\
+    pip3 install -r requirements.txt ;\
     export FLASK_APP=app/app.py ;\
     echo "Run app" ;\
     python3 -m flask run --host=0.0.0.0'
-
-
-
-
-
-
-
-#ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP \
-#    set -o xtrace
-#    sudo apt-get update -y
-#    sudo apt-get upgrade -y
-#    echo "install pip"
-#    sudo apt install python3-pip -y
-#    sudo pip3 install --upgrade pip
-#    echo "Clone repo"
-#    git clone https://github.com/nirbarazida/ANPR-AWS.git
-#    cd ANPR-AWS
-#    echo "Install requirements"
-#    pip3 install -r requirements.txt
-#    export FLASK_APP=app/app.py
-#    echo "Run app"
-#    python3 -m flask run --host=0.0.0.0
-
-
-
-
-#echo "Deploy app"
-#ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP '\
-#    sudo apt-get update -y ;\
-#    sudo apt-get upgrade -y ;\
-#    echo "install pip" ;\
-#    sudo apt-get install python3.8 -y ;\
-#    sudo apt-get install python3-setuptools -y ;\
-#    sudo apt-get install python3-pip -y ;\
-#    sudo pip3 install --upgrade pip -y ;\
-#    echo "Clone repo" ;\
-#    git clone https://github.com/nirbarazida/ANPR-AWS.git ;\
-#    cd ANPR-AWS ;\
-#    echo "Install requirements" ;\
-#    pip3 install -r requirements.txt ;\
-#    export FLASK_APP=app/app.py ;\
-#    echo "Run app" ;\
-#    python3 -m flask run --host=0.0.0.0'
-
-
-
-#    sudo apt-get update -y ;\
-#    echo "install pip" ;\
-#    sudo apt-get install python3.8 -y ;\
-#    sudo apt-get install python3-setuptools -y ;\
-#    sudo apt-get install python3-pip -y ;\
-#    sudo pip3 install --upgrade pip ;\
-#    echo "Clone repo" ;\
-#    git clone https://github.com/nirbarazida/ANPR-AWS.git ;\
-#    cd ANPR-AWS ;\
-#    echo "Install requirements" ;\
-#    pip3 install -r requirements.txt ;\
-#    export FLASK_APP=app/app.py ;\
-#    echo "Run app" ;\
-#    python3 -m flask run --host=0.0.0.0'

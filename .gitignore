@@ -131,3 +131,4 @@ dmypy.json
 ignore/
 .idea/
 *.pem
+*ignore.sh
