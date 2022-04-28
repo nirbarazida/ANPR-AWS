@@ -2,7 +2,6 @@ import json
 import re
 import boto3
 from flask import Response, Flask, render_template, request, redirect
-import yaml
 import datetime
 import math
 import uuid
@@ -112,8 +111,7 @@ def upload():
 
     image = request.files['image']
 
-    # TODO: add parking lot input
-    user_parking_lot = str(request.args.get(const["ParkingLotKey"]))
+    user_parking_lot = str(request.form[const["ParkingLotKey"]])
     rekognition_client = boto3.client('rekognition')
 
     buffer = image.read()
