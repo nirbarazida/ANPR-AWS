@@ -71,7 +71,7 @@ ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "Co
     git clone https://github.com/nirbarazida/ANPR-AWS.git ;\
     cd ANPR-AWS ;\
     echo "Install requirements" ;\
-    pip3 install -r requirements.txt ;\
+    python3-pip install -r requirements.txt ;\
     export FLASK_APP=app/app.py ;\
     echo "Run app" ;\
     python3 -m flask run --host=0.0.0.0'
