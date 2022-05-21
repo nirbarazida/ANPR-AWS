@@ -1,7 +1,7 @@
 # debug
 #set -o xtrace
 
-KEY_NAME="NAPR-AWS-`date +'%N'`"
+KEY_NAME="NAPR-AWS-AAA"
 KEY_PEM="$KEY_NAME.pem"
 
 echo "create key pair $KEY_PEM to connect to instances and save locally"
@@ -11,7 +11,7 @@ aws ec2 create-key-pair --key-name $KEY_NAME \
 # secure the key pair
 chmod 400 $KEY_PEM
 
-SEC_GRP="my-sg-`date +'%N'`"
+SEC_GRP="my-sg-AAA"
 
 echo "setup firewall $SEC_GRP"
 aws ec2 create-security-group   \
@@ -32,7 +32,7 @@ aws ec2 authorize-security-group-ingress        \
     --group-name $SEC_GRP --port 5000 --protocol tcp \
     --cidr $MY_IP/32
 
-UBUNTU_20_04_AMI="ami-0d527b8c289b4af7f"
+UBUNTU_20_04_AMI="ami-015c25ad8763b2f11"
 
 echo "Creating Ubuntu 20.04 instance..."
 RUN_INSTANCES=$(aws ec2 run-instances   \
@@ -60,19 +60,8 @@ aws dynamodb create-table \
     --key-schema AttributeName=ticketId,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
+echo "Install Docker"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo snap install docker"
 
-echo "Deploy app"
-ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP '\
-    sudo apt-get update -y ;\
-    echo "install pip" ;\
-    sudo apt-get install python3-setuptools -y ;\
-    sudo apt install python3-pip -y ;\
-    sudo pip3 install --upgrade pip ;\
-    echo "Clone repo" ;\
-    git clone https://github.com/nirbarazida/ANPR-AWS.git ;\
-    cd ANPR-AWS ;\
-    echo "Install requirements" ;\
-    pip3 install -r requirements.txt ;\
-    export FLASK_APP=app/app.py ;\
-    echo "Run app" ;\
-    python3 -m flask run --host=0.0.0.0'
+echo "Run Image"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo docker run -p 5000:5000 nirbarazida/anpr"
