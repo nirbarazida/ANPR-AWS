@@ -15,10 +15,7 @@ const = {"TableName": TableName,
          "ParkingLot": ParkingLot
          }
 
-# TODO: how to use TICKET_NUM as global var?
-# TODO: What if app fail? ticket id will restart and overwrite.
-# global TICKET_NUM
-# TICKET_NUM = 0
+
 app = Flask(__name__)
 
 
@@ -32,7 +29,7 @@ def entry_api():
     user_license_plate = str(request.args.get(const["LicensePlateKey"]))
     user_parking_lot = str(request.args.get(const["ParkingLotKey"]))
 
-    dynamodb_dynamodb = boto3.client('dynamodb', region_name='eu-central-1')
+    dynamodb_dynamodb = boto3.client('dynamodb')
     ticket_num = uuid.uuid4().int
     dynamodb_dynamodb.put_item(TableName=const["TableName"],
                                Item={const["TicketIdKey"]: {'S': str(ticket_num)},
@@ -49,7 +46,7 @@ def entry_api():
 
 
 def entry(user_license_plate, user_parking_lot):
-    dynamodb_dynamodb = boto3.client('dynamodb', region_name='eu-central-1')
+    dynamodb_dynamodb = boto3.client('dynamodb')
     ticket_num = uuid.uuid4().int
     dynamodb_dynamodb.put_item(TableName=const["TableName"],
                                Item={const["TicketIdKey"]: {'S': str(ticket_num)},
@@ -109,7 +106,7 @@ def upload():
     image = request.files['image']
 
     user_parking_lot = str(request.form[const["ParkingLotKey"]])
-    rekognition_client = boto3.client('rekognition', region_name='eu-central-1')
+    rekognition_client = boto3.client('rekognition')
 
     buffer = image.read()
 

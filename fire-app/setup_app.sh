@@ -1,7 +1,7 @@
 # debug
 #set -o xtrace
 
-KEY_NAME="NAPR-AWS-AAAA"
+KEY_NAME="NAPR-AWS-AB"
 KEY_PEM="$KEY_NAME.pem"
 
 echo "create key pair $KEY_PEM to connect to instances and save locally"
@@ -11,7 +11,7 @@ aws ec2 create-key-pair --key-name $KEY_NAME \
 # secure the key pair
 chmod 400 $KEY_PEM
 
-SEC_GRP="my-sg-AAAA"
+SEC_GRP="my-sg-AB"
 
 echo "setup firewall $SEC_GRP"
 aws ec2 create-security-group   \
@@ -60,8 +60,11 @@ aws dynamodb create-table \
     --key-schema AttributeName=ticketId,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
+echo "Install AWS-CLI"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo apt-get update && sudo apt-get install awscli -y && aws configure"
+
 echo "Install Docker"
 ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo snap install docker"
 
 echo "Run Image"
-ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo docker run -p 5000:5000 nirbarazida/anpr"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo docker run -p 5000:5000 -v $HOME/.aws/credentials:/home/app/.aws/credentials:ro nirbarazida/anpr"
