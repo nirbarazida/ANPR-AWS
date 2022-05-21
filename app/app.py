@@ -126,7 +126,3 @@ def upload():
     return Response(mimetype='application/json',
                     response="{'Error': 'No license plate found'}",
                     status=404)
-
-
-if __name__ == '__main__':
-    app.run(host="localhost", port=5000)
