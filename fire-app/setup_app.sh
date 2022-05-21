@@ -1,7 +1,7 @@
 # debug
 #set -o xtrace
 
-KEY_NAME="NAPR-AWS-AB"
+KEY_NAME="NAPR-AWS-ABA"
 KEY_PEM="$KEY_NAME.pem"
 
 echo "create key pair $KEY_PEM to connect to instances and save locally"
@@ -11,7 +11,7 @@ aws ec2 create-key-pair --key-name $KEY_NAME \
 # secure the key pair
 chmod 400 $KEY_PEM
 
-SEC_GRP="my-sg-AB"
+SEC_GRP="my-sg-ABA"
 
 echo "setup firewall $SEC_GRP"
 aws ec2 create-security-group   \
@@ -67,4 +67,4 @@ echo "Install Docker"
 ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo snap install docker"
 
 echo "Run Image"
-ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo docker run -p 5000:5000 -v $HOME/.aws/credentials:/home/app/.aws/credentials:ro nirbarazida/anpr"
+ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo docker run -p 5000:5000 -v $HOME/.aws/credentials:/root/.aws/credentials:ro -v $HOME/.aws/config:/root/.aws/config:ro nirbarazida/anpr"

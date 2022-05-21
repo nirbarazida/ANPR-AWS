@@ -15,7 +15,6 @@ const = {"TableName": TableName,
          "ParkingLot": ParkingLot
          }
 
-
 app = Flask(__name__)
 
 
@@ -88,6 +87,12 @@ def exit_car():
         user_parking_cost = calc_cost(user_park_time)
         user_plate = user["Item"][const["LicensePlateKey"]]["S"]
         user_parking_lot_id = user["Item"][const["ParkingLotKey"]]["S"]
+
+        dynamodb_dynamodb.delete_item(TableName=const["TableName"],
+                                      Key={const["TicketIdKey"]: {'S': user_ticket_id
+                                                                  }
+                                           }
+                                      )
 
         return Response(mimetype='application/json',
                         response=json.dumps({"LicensePlate": user_plate,
