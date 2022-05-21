@@ -1,7 +1,7 @@
 # debug
 #set -o xtrace
 
-KEY_NAME="NAPR-AWS-AAA"
+KEY_NAME="NAPR-AWS-AAAA"
 KEY_PEM="$KEY_NAME.pem"
 
 echo "create key pair $KEY_PEM to connect to instances and save locally"
@@ -11,7 +11,7 @@ aws ec2 create-key-pair --key-name $KEY_NAME \
 # secure the key pair
 chmod 400 $KEY_PEM
 
-SEC_GRP="my-sg-AAA"
+SEC_GRP="my-sg-AAAA"
 
 echo "setup firewall $SEC_GRP"
 aws ec2 create-security-group   \
