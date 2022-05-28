@@ -32,11 +32,11 @@ aws ec2 authorize-security-group-ingress        \
     --group-name $SEC_GRP --port 5000 --protocol tcp \
     --cidr $MY_IP/32
 
-UBUNTU_20_04_AMI="ami-015c25ad8763b2f11"
+UBUNTU_22_04_AMI="ami-04aa66cdfe687d427"
 
-echo "Creating Ubuntu 20.04 instance..."
+echo "Creating Ubuntu 22.04 instance..."
 RUN_INSTANCES=$(aws ec2 run-instances   \
-    --image-id $UBUNTU_20_04_AMI        \
+    --image-id $UBUNTU_22_04_AMI        \
     --instance-type t2.micro            \
     --key-name $KEY_NAME                \
     --credit-specification CpuCredits=unlimited \
@@ -60,11 +60,30 @@ aws dynamodb create-table \
     --key-schema AttributeName=ticketId,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
-echo "Install AWS-CLI"
-ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo apt-get update && sudo apt-get install awscli -y && aws configure"
 
-echo "Install Docker"
-ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo snap install docker"
+echo "Deploy app"
+ssh  -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP <<EOF
 
-echo "Run Image"
-ssh -tt -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@$PUBLIC_IP "sudo docker run -p 5000:5000 -v $HOME/.aws/credentials:/root/.aws/credentials:ro -v $HOME/.aws/config:/root/.aws/config:ro nirbarazida/anpr"
+    set -o xtrace
+    set -e
+    
+    echo "upgrade apt get" 
+    sudo apt-get upgrade -y
+
+    echo "update apt get x2" 
+    sudo apt-get update -y  
+
+    echo "install pip" 
+    sudo apt-get install python3-pip -y 
+
+    echo "Clone repo" 
+    git clone https://github.com/nirbarazida/ANPR-AWS.git 
+    cd ANPR-AWS 
+
+    echo "Install requirements" 
+    pip3 install -r requirements.txt 
+    export FLASK_APP=app/app.py 
+    echo "Run app" 
+    python3 -m flask run --host=0.0.0.0
+
+EOF
