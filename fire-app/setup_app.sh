@@ -67,6 +67,9 @@ ssh  -i $KEY_PEM -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking=no" -o "Conne
     set -o xtrace
     set -e
     
+    echo "update apt get"
+    sudo apt-get update -y
+    
     echo "upgrade apt get" 
     sudo apt-get upgrade -y
 
